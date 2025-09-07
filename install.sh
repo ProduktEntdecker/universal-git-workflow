@@ -16,9 +16,9 @@
 # • Validates the installation and provides usage instructions
 #
 # Usage:
-#   curl -sSL https://gist.githubusercontent.com/[gist-url]/install.sh | bash
+#   curl -sSL https://raw.githubusercontent.com/ProduktEntdecker/universal-git-workflow/main/install.sh | bash
 #   # OR
-#   wget -O - https://gist.githubusercontent.com/[gist-url]/install.sh | bash
+#   wget -O - https://raw.githubusercontent.com/ProduktEntdecker/universal-git-workflow/main/install.sh | bash
 #
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -52,10 +52,10 @@ readonly INSTALL_DIRS=(
     "$HOME/bin"                   # Alternative user-local
 )
 
-# Gist URLs - Replace with actual URLs after creating the gist
-GIST_BASE_URL="${GIST_BASE_URL:-https://gist.githubusercontent.com/YOUR_USERNAME/GIST_ID/raw}"
-STARTUP_URL="${GIST_BASE_URL}/startup.sh"
-WRAPUP_URL="${GIST_BASE_URL}/wrapup.sh"
+# Repository URLs for downloading scripts
+REPO_BASE_URL="${REPO_BASE_URL:-https://raw.githubusercontent.com/ProduktEntdecker/universal-git-workflow/main}"
+STARTUP_URL="${REPO_BASE_URL}/scripts/startup.sh"
+WRAPUP_URL="${REPO_BASE_URL}/scripts/wrapup.sh"
 
 # ┌─────────────────────────────────────────────────────────────────────────────┐
 # │ 🔧 UTILITY FUNCTIONS                                                        │
@@ -255,30 +255,14 @@ download_scripts() {
         return 0
     fi
     
-    # Production version would download from gist:
-    # download_file "$STARTUP_URL" "$startup_script" "startup script" || return 1
-    # download_file "$WRAPUP_URL" "$wrapup_script" "wrapup script" || return 1
+    # Production version downloads from repository:
+    download_file "$STARTUP_URL" "$startup_script" "startup script" || return 1
+    download_file "$WRAPUP_URL" "$wrapup_script" "wrapup script" || return 1
     
-    print_status "$RED" "❌ Could not find source scripts (this is normal in demo mode)"
-    print_status "$YELLOW" "💡 In production, scripts would be downloaded from GitHub Gist"
     
-    # Create minimal demo scripts
-    cat > "$startup_script" << 'EOF'
-#!/bin/bash
-echo "🚀 Startup script installed! (Demo version)"
-echo "This would normally detect your project and start development services."
-echo "Run with --help for full options."
-EOF
-
-    cat > "$wrapup_script" << 'EOF'
-#!/bin/bash
-echo "🎯 Wrapup script installed! (Demo version)" 
-echo "This would normally commit changes and create pull requests."
-echo "Run with --help for full options."
-EOF
-    
+    # Make scripts executable
     chmod +x "$startup_script" "$wrapup_script"
-    print_status "$GREEN" "✅ Demo scripts created"
+    print_status "$GREEN" "✅ Scripts installed and configured"
     return 0
 }
 
